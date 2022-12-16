@@ -1,0 +1,14 @@
+{
+  "name": "node-logger",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc && node dist/test/index.js"
+  },
+  "author": "Kaddlee",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^18.11.10"
+  }
+}

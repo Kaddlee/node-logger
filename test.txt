@@ -1,0 +1,3 @@
+17.12.2022, 00:15:57 [LOG] test!
+17.12.2022, 00:15:57 [WARN] Discord webhook is disabled in dev mode
+17.12.2022, 00:15:57 [ERROR] Server return 500 code
