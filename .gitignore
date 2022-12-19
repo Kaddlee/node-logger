@@ -1,4 +1,4 @@
 node_modules
-test
+test.txt
 dist/test
 tsconfig.json

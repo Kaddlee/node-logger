@@ -22,14 +22,14 @@ class Logger {
     useLogger(message, format, ...args) {
         if (typeof (message) === 'string') {
             message = this.replacePlaceholders(format.replace('%msg%', message));
-            this.writeToStream(this.clearColors(message));
+            this.writeToStream(this.clearColors(message), ...args);
             console.log(this.replaceColors(message) + Colors_1.default.Reset, ...args);
         }
         else
             console.log(message);
     }
-    writeToStream(message) {
-        this.stream?.write(this.clearColors(message) + '\n');
+    writeToStream(message, ...args) {
+        this.stream?.write(this.clearColors(message) + (Object.keys(args).length !== 0 ? JSON.stringify(args) : "") + '\n');
     }
     replacePlaceholders(message) {
         return message.replace(/%\w+%/g, (placeholder) => this.placeholders[placeholder]() || placeholder);
@@ -63,7 +63,12 @@ class Logger {
      * @param {string} format logger format
      */
     createLogger(name, format) {
-        this[name] = (message, ...args) => this.useLogger(message, format, ...args);
+        if (this[name]) {
+            throw new Error(`Name ${name} for logger is bisy`);
+        }
+        else {
+            this[name] = (message, ...args) => this.useLogger(message, format, ...args);
+        }
     }
     /**
      *

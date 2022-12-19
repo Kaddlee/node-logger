@@ -30,13 +30,13 @@ export class Logger {
   private useLogger(message: any, format: string, ...args: any | null): void {
     if (typeof(message) === 'string') {
       message = this.replacePlaceholders(format.replace('%msg%', message));
-      this.writeToStream(this.clearColors(message));
+      this.writeToStream(this.clearColors(message), ...args);
       console.log(this.replaceColors(message) + Colors.Reset, ...args)
     } else console.log(message);
   }
 
-  private writeToStream(message: string): void {
-    this.stream?.write(this.clearColors(message) + '\n');
+  private writeToStream(message: string, ...args: any | null): void {
+    this.stream?.write(this.clearColors(message) + (Object.keys(args).length !== 0 ? JSON.stringify(args) : "") + '\n');
   }
 
   private replacePlaceholders(message: string): string {
@@ -75,7 +75,11 @@ export class Logger {
    * @param {string} format logger format
    */
   createLogger(name: string, format: string): void {
-    this[name] = (message: string, ...args: any | null): void => this.useLogger(message, format, ...args);
+    if (this[name]) {
+      throw new Error(`Name ${name} for logger is bisy`);
+    } else {
+      this[name] = (message: string, ...args: any | null): void => this.useLogger(message, format, ...args);
+    }
   }
 
   /**
