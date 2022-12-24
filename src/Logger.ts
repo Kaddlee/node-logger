@@ -3,6 +3,7 @@ import Colors from "./Colors";
 
 export interface LoggerArgs {
   colors?: any,
+  env?: any[],
   WriteStream?: {
     stream: WriteStream
   }
@@ -14,6 +15,7 @@ export class Logger {
 
   private placeholders: any = {};
   private colors: any = {};
+  private env: any[] = [];
   private stream: WriteStream | null = null;
 
   /**
@@ -25,6 +27,7 @@ export class Logger {
   constructor(args: LoggerArgs | null = null) {
     this.colors = args?.colors || Colors.default; 
     this.stream = args?.WriteStream?.stream || null;
+    this.env = args?.env || [];
   }
 
   private useLogger(message: any, format: string, ...args: any | null): void {
@@ -73,12 +76,17 @@ export class Logger {
    * 
    * @param {string} name logger name
    * @param {string} format logger format
+   * @param {string | null} env logger env for make callable
    */
-  createLogger(name: string, format: string): void {
+  createLogger(name: string, format: string, env: string | null = null): void {
     if (this[name]) {
       throw new Error(`Name ${name} for logger is bisy`);
     } else {
-      this[name] = (message: string, ...args: any | null): void => this.useLogger(message, format, ...args);
+      this[name] = (message: string, ...args: any | null): void => {
+        if (env === null || this.env.length === 0 || this.env.includes(env)) {
+          this.useLogger(message, format, ...args);
+        }
+      }
     }
   }
 

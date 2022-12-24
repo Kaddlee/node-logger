@@ -15,9 +15,11 @@ class Logger {
     constructor(args = null) {
         this.placeholders = {};
         this.colors = {};
+        this.env = [];
         this.stream = null;
         this.colors = args?.colors || Colors_1.default.default;
         this.stream = args?.WriteStream?.stream || null;
+        this.env = args?.env || [];
     }
     useLogger(message, format, ...args) {
         if (typeof (message) === 'string') {
@@ -61,13 +63,18 @@ class Logger {
      *
      * @param {string} name logger name
      * @param {string} format logger format
+     * @param {string | null} env logger env for make callable or null
      */
-    createLogger(name, format) {
+    createLogger(name, format, env = null) {
         if (this[name]) {
             throw new Error(`Name ${name} for logger is bisy`);
         }
         else {
-            this[name] = (message, ...args) => this.useLogger(message, format, ...args);
+            this[name] = (message, ...args) => {
+                if (env === null || this.env.length === 0 || this.env.includes(env)) {
+                    this.useLogger(message, format, ...args);
+                }
+            };
         }
     }
     /**
