@@ -14,12 +14,26 @@ class Logger {
      */
     constructor(args = null) {
         this.placeholders = {};
-        this.colors = {};
-        this.env = [];
-        this.stream = null;
         this.colors = args?.colors || Colors_1.default.default;
         this.stream = args?.WriteStream?.stream || null;
         this.env = args?.env || [];
+        this.keys = {
+            placeholders: args?.keys?.placeholders || "%",
+            colors: args?.keys?.colors || "&"
+        };
+        this.createRegex();
+    }
+    createRegex() {
+        try {
+            this.regex = {
+                placeholders: new RegExp(this.keys.placeholders + "\\w+" + this.keys.placeholders, "g"),
+                colors: new RegExp(this.keys.colors + "\\w+" + this.keys.colors, "g"),
+                clearColors: new RegExp(this.keys.colors, "g"),
+            };
+        }
+        catch {
+            throw new Error(`Regex key [${this.keys.placeholders} | ${this.keys.colors}] is invalid, please use another one`);
+        }
     }
     useLogger(message, format, ...args) {
         if (typeof (message) === 'string') {
@@ -34,13 +48,13 @@ class Logger {
         this.stream?.write(this.clearColors(message) + (Object.keys(args).length !== 0 ? JSON.stringify(args) : "") + '\n');
     }
     replacePlaceholders(message) {
-        return message.replace(/%\w+%/g, (placeholder) => this.placeholders[placeholder]() || placeholder);
+        return message.replace(this.regex.placeholders, (placeholder) => this.placeholders[placeholder]() || placeholder);
     }
     clearColors(message) {
-        return message.replace(/&\w+&/g, "");
+        return message.replace(this.regex.colors, "");
     }
     replaceColors(message) {
-        return message.replace(/&\w+&/g, (color) => this.colors[color] || color);
+        return message.replace(this.regex.colors, (color) => this.colors[color.replace(this.regex.clearColors, "")] || color);
     }
     /**
      *
@@ -63,7 +77,7 @@ class Logger {
      *
      * @param {string} name logger name
      * @param {string} format logger format
-     * @param {string | null} env logger env for make callable or null
+     * @param {string | null} env logger env for make callable
      */
     createLogger(name, format, env = null) {
         if (this[name]) {
@@ -92,7 +106,7 @@ class Logger {
      * @param {object} callback placeholder callback with return placeholder value
      */
     createPlaceholder(name, callback) {
-        this.placeholders['%' + name + '%'] = callback;
+        this.placeholders[this.keys.placeholders + name + this.keys.placeholders] = callback;
     }
 }
 exports.Logger = Logger;

@@ -1,14 +1,15 @@
 {
   "name": "node-logger",
   "version": "0.0.1",
-  "description": "",
+  "description": "Flexible logging enhancement for your NodeJS project with colors and placeholders",
   "main": "index",
   "scripts": {
     "start": "tsc && node dist/test/index.js"
   },
   "author": "Kaddlee",
   "license": "MIT",
-  "dependencies": {
-    "@types/node": "^18.11.10"
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^18.11.17"
   }
 }

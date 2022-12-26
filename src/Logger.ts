@@ -4,6 +4,10 @@ import Colors from "./Colors";
 export interface LoggerArgs {
   colors?: any,
   env?: any[],
+  keys?: {
+    placeholders?: string,
+    colors?: string
+  },
   WriteStream?: {
     stream: WriteStream
   }
@@ -14,9 +18,11 @@ export class Logger {
   [name: string]: any;
 
   private placeholders: any = {};
-  private colors: any = {};
-  private env: any[] = [];
-  private stream: WriteStream | null = null;
+  private colors!: any;
+  private env!: any[];
+  private keys!: any;
+  private regex!: any;
+  private stream!: WriteStream | null;
 
   /**
    * 
@@ -28,6 +34,23 @@ export class Logger {
     this.colors = args?.colors || Colors.default; 
     this.stream = args?.WriteStream?.stream || null;
     this.env = args?.env || [];
+    this.keys = { // keys for generate regex
+      placeholders: args?.keys?.placeholders || "%",
+      colors: args?.keys?.colors || "&" 
+    }
+    this.createRegex();
+  }
+
+  private createRegex(): void {
+    try {
+      this.regex = {
+        placeholders: new RegExp(this.keys.placeholders + "\\w+" + this.keys.placeholders, "g"),
+        colors: new RegExp(this.keys.colors + "\\w+" + this.keys.colors, "g"),
+        clearColors: new RegExp(this.keys.colors, "g"),
+      }
+    } catch {
+      throw new Error(`Regex key [${this.keys.placeholders} | ${this.keys.colors}] is invalid, please use another one`);
+    }
   }
 
   private useLogger(message: any, format: string, ...args: any | null): void {
@@ -43,15 +66,15 @@ export class Logger {
   }
 
   private replacePlaceholders(message: string): string {
-    return message.replace(/%\w+%/g, (placeholder: string) => this.placeholders[placeholder]() || placeholder);
+    return message.replace(this.regex.placeholders, (placeholder: string) => this.placeholders[placeholder]() || placeholder);
   }
 
   private clearColors(message: string): string {
-    return message.replace(/&\w+&/g, "");
+    return message.replace(this.regex.colors, "");
   }
 
   private replaceColors(message: string): string {
-    return message.replace(/&\w+&/g, (color: string) => this.colors[color] || color);
+    return message.replace(this.regex.colors, (color: string) => this.colors[color.replace(this.regex.clearColors, "")] || color);
   }
 
   /**
@@ -105,6 +128,6 @@ export class Logger {
    * @param {object} callback placeholder callback with return placeholder value
    */
   createPlaceholder(name: string, callback: object): void {
-    this.placeholders['%' + name + '%'] = callback;
+    this.placeholders[this.keys.placeholders + name + this.keys.placeholders] = callback;
   }
 }
