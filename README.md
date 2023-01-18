@@ -12,6 +12,12 @@ logger.createLogger("test", "%date% &cyan&[log]&reset& %msg%"); // %msg% default
 logger.test("test message");
 ```
 
+# Install
+
+```
+npm i --save https://github.com/Kaddlee/node-logger.git
+```
+
 ## Environments
 
 Only loggers selected in the config will be called
@@ -30,7 +36,7 @@ logger.other("other message"); // no call
 
 ## WriteStream
 
-Write log to file
+Write log to file using fs
 
 ```js
 const logger = new Logger({
@@ -90,3 +96,23 @@ const logger = new Logger({
   }
 });
 ```
+
+## Regex keys
+
+You can change the keys to custom, but this is not recommended
+
+```js
+const logger = new Logger({
+  keys: {
+    placeholders: "#", // default %
+    colors: "%"        // default &
+  }
+});
+
+logger.createPlaceholder("port", () => process.env.PORT);
+
+const rendered = logger.render("%cyan%just render string, port: %underscore%%red%#port#");
+
+```
+
+
