@@ -54,11 +54,11 @@ export class Logger {
   }
 
   private useLogger(message: any, format: string, ...args: any | null): void {
-    if (typeof(message) === 'string') {
+    if (typeof(message) === 'string' || message === undefined) {
       message = this.replacePlaceholders(format.replace('%msg%', message));
       this.writeToStream(this.clearColors(message), ...args);
       console.log(this.replaceColors(message) + Colors.Reset, ...args)
-    } else console.log(message);
+    } else console.log(message, ...args);
   }
 
   private writeToStream(message: string, ...args: any | null): void {

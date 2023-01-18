@@ -36,13 +36,13 @@ class Logger {
         }
     }
     useLogger(message, format, ...args) {
-        if (typeof (message) === 'string') {
+        if (typeof (message) === 'string' || message === undefined) {
             message = this.replacePlaceholders(format.replace('%msg%', message));
             this.writeToStream(this.clearColors(message), ...args);
             console.log(this.replaceColors(message) + Colors_1.default.Reset, ...args);
         }
         else
-            console.log(message);
+            console.log(message, ...args);
     }
     writeToStream(message, ...args) {
         this.stream?.write(this.clearColors(message) + (Object.keys(args).length !== 0 ? JSON.stringify(args) : "") + '\n');
