@@ -64,7 +64,7 @@ const logger = new Logger(); // setup with Colors.default
 
 ```
 "&reset&": Colors.Reset,
-"&dright&": Colors.Bright,
+"&bright&": Colors.Bright,
 "&dim&": Colors.Dim,
 "&underscore&": Colors.Underscore,
 "&black&": Colors.FgBlack,
