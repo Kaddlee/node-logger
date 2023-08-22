@@ -67,6 +67,21 @@ class Logger {
         return this.replacePlaceholders(this.replaceColors(message) + Colors_1.default.Reset);
     }
     /**
+     * Logs all the messages using the specified logger.
+     *
+     * @param {string} logger - The name of the logger to use.
+     * @param {string[]} messages - An array of messages to be logged.
+     * @throws {Error} Throws an error if the specified logger is not found.
+     */
+    logAll(logger, messages) {
+        if (this[logger]) {
+            messages.forEach((message) => this[logger](message));
+        }
+        else {
+            throw new Error(`Logger ${logger} not found`);
+        }
+    }
+    /**
      *
      * Create logger
      *

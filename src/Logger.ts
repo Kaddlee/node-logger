@@ -2,8 +2,10 @@ import { WriteStream } from "fs";
 import Colors from "./Colors";
 
 export interface LoggerArgs {
-  colors?: any,
-  env?: any[],
+  colors?: {
+    [key: string]: string
+  },
+  env?: string[],
   keys?: {
     placeholders?: string,
     colors?: string
@@ -19,7 +21,7 @@ export class Logger {
 
   private placeholders: any = {};
   private colors!: any;
-  private env!: any[];
+  private env!: string[];
   private keys!: any;
   private regex!: any;
   private stream!: WriteStream | null;
@@ -57,7 +59,7 @@ export class Logger {
     if (typeof(message) === 'string' || message === undefined) {
       message = this.replacePlaceholders(format.replace('%msg%', message));
       this.writeToStream(this.clearColors(message), ...args);
-      console.log(this.replaceColors(message) + Colors.Reset, ...args)
+      console.log(this.replaceColors(message) + Colors.Reset, ...args);
     } else console.log(message, ...args);
   }
 
@@ -84,8 +86,23 @@ export class Logger {
    * @param {string} message raw string for render
    * @returns {string} rendered string with placeholders and colors
    */
-  render(message: string): string {
+  public render(message: string): string {
     return this.replacePlaceholders(this.replaceColors(message) + Colors.Reset);
+  }
+
+  /**
+   * Logs all the messages using the specified logger.
+   *
+   * @param {string} logger - The name of the logger to use.
+   * @param {string[]} messages - An array of messages to be logged.
+   * @throws {Error} Throws an error if the specified logger is not found.
+   */
+  public logAll(logger: string, messages: string[]): void {
+    if (this[logger]) {
+      messages.forEach((message: string) => this[logger](message));
+    } else {
+      throw new Error(`Logger ${logger} not found`);
+    }
   }
 
   /**
@@ -101,7 +118,7 @@ export class Logger {
    * @param {string} format logger format
    * @param {string | null} env logger env for make callable
    */
-  createLogger(name: string, format: string, env: string | null = null): void {
+  public createLogger(name: string, format: string, env: string | null = null): void {
     if (this[name]) {
       throw new Error(`Name ${name} for logger is bisy`);
     } else {
@@ -127,7 +144,7 @@ export class Logger {
    * @param {string} name placeholder name
    * @param {object} callback placeholder callback with return placeholder value
    */
-  createPlaceholder(name: string, callback: object): void {
+  public createPlaceholder(name: string, callback: object): void {
     this.placeholders[this.keys.placeholders + name + this.keys.placeholders] = callback;
   }
 }
