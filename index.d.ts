@@ -1,6 +1,6 @@
 import { WriteStream } from "fs";
 
-declare module Logger {
+declare module "node-logger" {
 	export interface LoggerArgs {
 		colors?: {
 			[key: string]: string
@@ -12,11 +12,13 @@ declare module Logger {
 		},
 		WriteStream?: {
 			stream: WriteStream
-		},
-		stream: WriteStream
+		}
 	}
 
 	export class Logger {
+
+		[index: string]: any;
+
 		/**
 		 * 
 		 * Logger constructor
