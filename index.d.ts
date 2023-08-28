@@ -59,7 +59,7 @@ declare module "node-logger" {
 		 * @param {string | null} env logger env for make callable
 		 * @throws {Error} Throws an error if name for logger busy.
 		 */
-		public createLogger: (name: string, format: string, env: string[]) => void;
+		public createLogger: (name: string, format: string, env: string) => void;
 
 		/**
 		 * 
